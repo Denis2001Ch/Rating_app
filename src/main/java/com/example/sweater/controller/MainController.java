@@ -3,12 +3,12 @@ package com.example.sweater.controller;
 import com.example.sweater.domain.Message;
 import com.example.sweater.repos.MessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import com.example.sweater.domain.User;
 
 @Controller
 public class MainController {
@@ -16,34 +16,31 @@ public class MainController {
     private MessageRepo messageRepo;
 
     @GetMapping("/")
-    public String greeting(Map<String, Object> model) {
+    public String greeting() {
         return "greeting";
     }
 
     @GetMapping("/main")
-    public String main(Map<String, Object> model) {
+    public String main(Model model) {
         Iterable<Message> messages = messageRepo.findAll();
-
-        model.put("messages", messages);
-
+        model.addAttribute("messages", messages);
         return "main";
     }
 
     @PostMapping("/main")
-    public String add(@RequestParam String text, @RequestParam String tag, Map<String, Object> model) {
-        Message message = new Message(text, tag);
+    public String add(
+            @AuthenticationPrincipal User user,
+            @ModelAttribute Message message, Model model) {
 
+        message.setUser(user);
         messageRepo.save(message);
-
-        Iterable<Message> messages = messageRepo.findAll();
-
-        model.put("messages", messages);
+        model.addAttribute("messages", messageRepo.findAll());
 
         return "main";
     }
 
     @PostMapping("filter")
-    public String filter(@RequestParam String filter, Map<String, Object> model) {
+    public String filter(@RequestParam String filter, Model model) {
         Iterable<Message> messages;
 
         if (filter != null && !filter.isEmpty()) {
@@ -52,7 +49,17 @@ public class MainController {
             messages = messageRepo.findAll();
         }
 
-        model.put("messages", messages);
+        model.addAttribute("messages", messages);
+
+        return "main";
+    }
+
+    @RequestMapping(value = "/delete", method = RequestMethod.GET)
+    @Transactional
+    public String delete(@RequestParam String id, Model model) {
+
+        messageRepo.deleteById(Integer.parseInt(id));
+        model.addAttribute("messages", messageRepo.findAll());
 
         return "main";
     }

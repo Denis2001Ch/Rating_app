@@ -1,9 +1,10 @@
 package com.example.sweater.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import javax.persistence.*;
+import java.util.Collection;
 
 @Entity
 public class Message {
@@ -14,12 +15,21 @@ public class Message {
     private String text;
     private String tag;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
     public Message() {
     }
 
-    public Message(String text, String tag) {
+    public Message(String text, String tag, User user) {
         this.text = text;
         this.tag = tag;
+        this.user = user;
     }
 
     public void setText(String text) {
@@ -42,7 +52,15 @@ public class Message {
         return tag;
     }
 
+    private String getAuthorName(){
+        return user != null ? user.getUsername() : "none";
+    }
+
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
