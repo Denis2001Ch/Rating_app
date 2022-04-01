@@ -21,11 +21,18 @@
         <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
         <button type="submit">Найти</button>
     </form>
+    Удалить сообщение:
+    <form method="delete" action="delete">
+        <input type="text" name="id">
+        <input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+        <button type="submit">Удалить</button>
+    </form>
     {{#messages}}
     <div>
         <b>{{id}}</b>
         <span>{{text}}</span>
         <i>{{tag}}</i>
+        <strong>{{authorName}}</strong>
     </div>
     {{/messages}}
 </body>
