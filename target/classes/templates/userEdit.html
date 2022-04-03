@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>User Edit</title>
+</head>
+<a href = "/user"> User </a>
+<body>
+    <form action="/user" method="post" th:object="${user}" >
+
+        <input type="hidden"  name="userId" th:value="${user.id}">
+
+        <label> Roles:
+                <input type="checkbox" name="roles"
+                       th:each="role : ${roles}"
+                       th:text="${role.name}"/>
+        </label>
+
+        <button type="submit">Save</button>
+</form>
+</body>
+</html>
