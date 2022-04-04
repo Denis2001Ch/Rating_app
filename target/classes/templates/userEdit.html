@@ -5,18 +5,16 @@
     <meta charset="UTF-8">
     <title>User Edit</title>
 </head>
-<a href = "/user"> User </a>
+<a th:href = "@{/user}"> User </a>
 <body>
-    <form action="/user" method="post" th:object="${user}" >
+    <form  th:action="@{/user/edit}" method="post" th:object="${user}" >
+
+        <label> Roles:</label>
+        <li th:each="role : ${roles}">
+                <input type="checkbox" name="roles" th:text="${role.name}" th:value="${role}"/>
+        </li>
 
         <input type="hidden"  name="userId" th:value="${user.id}">
-
-        <label> Roles:
-                <input type="checkbox" name="roles"
-                       th:each="role : ${roles}"
-                       th:text="${role.name}"/>
-        </label>
-
         <button type="submit">Save</button>
 </form>
 </body>

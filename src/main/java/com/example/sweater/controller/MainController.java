@@ -3,17 +3,26 @@ package com.example.sweater.controller;
 import com.example.sweater.domain.Message;
 import com.example.sweater.repos.MessageRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.sweater.domain.User;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
 
 @Controller
 public class MainController {
+
     @Autowired
     private MessageRepo messageRepo;
+
+    @Value("${upload.path}")
+    private String uploadPath;
 
     @GetMapping("/")
     public String greeting() {
@@ -30,7 +39,22 @@ public class MainController {
     @PostMapping("/main")
     public String add(
             @AuthenticationPrincipal User user,
-            @ModelAttribute Message message, Model model) {
+            @RequestParam("file") MultipartFile file,
+            @ModelAttribute Message message, Model model) throws IOException {
+
+        if (file != null && !file.getOriginalFilename().isEmpty()) {
+            /*File uploadDir = new File(uploadPath);
+
+            if (!uploadDir.exists()) {
+                uploadDir.mkdir();
+            }
+            String uuidFile = UUID.randomUUID().toString();*/
+            String resultFilename = file.getOriginalFilename();
+            file.transferTo(new File(uploadPath + "/" + resultFilename));
+
+            message.setFilename(resultFilename);
+        }
+
 
         message.setUser(user);
         messageRepo.save(message);

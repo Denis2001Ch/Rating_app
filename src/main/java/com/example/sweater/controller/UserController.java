@@ -30,18 +30,15 @@ public class UserController {
     public String userEditForm(@PathVariable("id") User user, Model model) {
 
         model.addAttribute("user", user);
-        System.out.println(user);
         model.addAttribute("roles", Role.values());
 
         return "userEdit";
     }
 
-    @PostMapping
+    @PostMapping("edit")
     public String userSave(
             @RequestParam("userId") User user,
-            @RequestParam Map<String, String> form) {
-
-        System.out.println(1);
+            @RequestParam("roles") String[] rolesForm) {
 
         Set<String> roles = Arrays.stream(Role.values())
                 .map(Role::name)
@@ -49,11 +46,12 @@ public class UserController {
 
         user.getRoles().clear();
 
-        for (String key : form.keySet()) {
+        for (String key : rolesForm) {
             if (roles.contains(key)) {
                 user.getRoles().add(Role.valueOf(key));
             }
         }
+        user.getRoles().stream().forEach(x -> x.name() ); //?
 
         userRepo.save(user);
         return "redirect:/user";

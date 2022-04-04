@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Main</title>
+</head>
+<body>
+    <a href="/user">user list</a>
+    <a href="/login">login page</a>
+    <br>
+    <div>
+        <form th:action="@{/logout}" method="post">
+            <input type="submit" value="Sign Out"/>
+        </form>
+    </div>
+    <br>
+    <div>
+        <form th:action="@{/main}" method="post" enctype="multipart/form-data" >
+            <input type="file" name="file">
+            <input type="text" name="text" placeholder="Введите сообщение" />
+            <input type="text" name="tag" placeholder="Тэг">
+            <button type="submit">Добавить</button>
+        </form>
+    </div>
+    <br>
+    <div>Список сообщений</div>
+    <form method="post" th:action="@{/filter}">
+        <input type="text" name="filter">
+        <button type="submit">Найти</button>
+    </form>
+    <div>Удалить сообщение:</div>
+    <form method="delete" th:action="@{/delete}">
+        <input type="text" name="id">
+        <button type="submit">Удалить</button>
+    </form>
+    <br>
+    <table id="countryList">
+        <thead>
+        <tr>
+            <th> Id   </th>
+            <th> Text   </th>
+            <th> Tag   </th>
+            <th> authorName   </th>
+            <th> fileName   </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="message : ${messages}">
+            <td th:text="${message.id}"></td>
+            <td th:text="${message.text}"></td>
+            <td th:text="${message.tag}"></td>
+            <td th:text="${message.getAuthorName()}"></td>
+            <td th:text="${message.getFilename()}"></td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</html>
