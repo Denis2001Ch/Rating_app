@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 @Controller
 public class MainController {
@@ -40,7 +41,7 @@ public class MainController {
     public String add(
             @AuthenticationPrincipal User user,
             @RequestParam("file") MultipartFile file,
-            @ModelAttribute Message message, Model model) throws IOException {
+            @ModelAttribute Message message, Model model) throws IOException, InterruptedException {
 
         if (file != null && !file.getOriginalFilename().isEmpty()) {
             /*File uploadDir = new File(uploadPath);
@@ -51,7 +52,6 @@ public class MainController {
             String uuidFile = UUID.randomUUID().toString();*/
             String resultFilename = file.getOriginalFilename();
             file.transferTo(new File(uploadPath + "/" + resultFilename));
-
             message.setFilename(resultFilename);
         }
 
