@@ -3,9 +3,11 @@ package com.example.sweater.controller;
 import com.example.sweater.domain.Role;
 import com.example.sweater.domain.User;
 import com.example.sweater.repos.UserRepo;
+import com.example.sweater.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +19,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/user")
 @PreAuthorize("hasAuthority('ADMIN')")
 public class UserController {
+
     @Autowired
     private UserRepo userRepo;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping
-    public String userList(Model model) {
+    public String userList(Model model,  @AuthenticationPrincipal User user) {
+
+        model.addAttribute("mainUser", user);
+        model.addAttribute("subscribersIds", userService.getSubscribersId(user));
         model.addAttribute("users", userRepo.findAll());
         return "userList";
     }
@@ -56,4 +65,22 @@ public class UserController {
         userRepo.save(user);
         return "redirect:/user";
     }
+
+    @GetMapping("/subscribe/{id}")
+    public String userSubscribe(
+            @AuthenticationPrincipal User myuser,
+            @PathVariable("id") User user) {
+        userService.subscribe(myuser, user);
+        return "redirect:/user";
+    }
+    @GetMapping("/unsubscribe/{id}")
+    public String userUnsubscribe(
+            @AuthenticationPrincipal User myuser,
+            @PathVariable("id") User user) {
+        userService.unsubscribe(myuser, user);
+        return "redirect:/user";
+    }
+
+
+
 }

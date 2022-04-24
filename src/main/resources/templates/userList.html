@@ -16,7 +16,13 @@
     <tr th:each="user : ${users}">
         <td th:utext="${user.username}"></td>
         <td th:utext="${user.roles}"></td>
-        <td><a th:href="@{/user/{id}(id=${user.getId()})}">Edit</a>
+        <td><a th:href="@{/user/{id}(id=${user.getId()})}">Edit</a></td>
+        <td>
+            <span th:if="${mainUser.getId().equals(user.getId()) == false}">
+                <span th:if="${subscribersIds.contains(user.getId())}"> <a th:href="@{/user/unsubscribe/{id}(id=${user.getId()})}">Unsubscribe</a></span>
+                <span th:unless="${subscribersIds.contains(user.getId())}"> <a th:href="@{/user/subscribe/{id}(id=${user.getId()})}">Subscribe</a></span>
+            </span>
+        </td>
     </tr>
     </tbody>
 </table>

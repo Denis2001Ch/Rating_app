@@ -10,21 +10,27 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;*
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService
 {
 
-   @Autowired
+    @Autowired
     private UserRepo userRepo;
 
     @Autowired
     private MailSender mailSender;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -41,7 +47,7 @@ public class UserService implements UserDetailsService
         user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
-
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepo.save(user);
 
         if (!StringUtils.isEmpty(user.getEmail())) {
@@ -70,5 +76,14 @@ public class UserService implements UserDetailsService
         userRepo.save(user);
 
         return true;
+    }
+    public void subscribe(User currentUser, User user){
+        userRepo.getById(currentUser.getId()).getSubscribers().add(user);
+    }
+    public void unsubscribe(User currentUser, User user){
+        userRepo.getById(currentUser.getId()).getSubscribers().remove(user);
+    }
+    public Set<Long> getSubscribersId(User user){
+        return userRepo.findAll().get(Math.toIntExact(user.getId()-1)).getSubscribers().stream().map(x -> x.getId()).collect(Collectors.toSet());
     }
 }
