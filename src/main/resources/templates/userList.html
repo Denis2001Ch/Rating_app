@@ -5,6 +5,8 @@
     <title>userList</title>
 </head>
 <body>
+<div th:replace="parts/common :: login"></div>
+
 <table id="countryList">
     <thead>
     <tr>
@@ -27,7 +29,6 @@
     </tbody>
 </table>
 <br>
-<br>
-
+<a th:href="@{/user/showMessage}">Show Messages</a>
 </body>
 </html>

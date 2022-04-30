@@ -8,13 +8,16 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import com.example.sweater.domain.User;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 @Controller
 public class MainController {
@@ -34,6 +37,7 @@ public class MainController {
     public String main(Model model) {
         Iterable<Message> messages = messageRepo.findAll();
         model.addAttribute("messages", messages);
+        model.addAttribute("newMessage", new Message());
         return "main";
     }
 
@@ -46,14 +50,14 @@ public class MainController {
         if (file != null && !file.getOriginalFilename().isEmpty()) {
             /*File uploadDir = new File(uploadPath);
 
-            if (!uploadDir.exists()) {
-                uploadDir.mkdir();
-            }
-            String uuidFile = UUID.randomUUID().toString();*/
-            String resultFilename = file.getOriginalFilename();
-            file.transferTo(new File(uploadPath + "/" + resultFilename));
-            message.setFilename(resultFilename);
-        }
+                    if (!uploadDir.exists()) {
+                        uploadDir.mkdir();
+                    }
+                    String uuidFile = UUID.randomUUID().toString();*/
+                    String resultFilename = file.getOriginalFilename();
+                    file.transferTo(new File(uploadPath + "/" + resultFilename));
+                    message.setFilename(resultFilename);
+                }
 
 
         message.setUser(user);
@@ -84,7 +88,6 @@ public class MainController {
 
         messageRepo.deleteById(Integer.parseInt(id));
         model.addAttribute("messages", messageRepo.findAll());
-
         return "main";
     }
 }

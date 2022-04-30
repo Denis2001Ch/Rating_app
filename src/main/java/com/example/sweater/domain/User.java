@@ -138,6 +138,18 @@ public class User implements UserDetails {
     )
     private Set<User> subscriptions = new HashSet<>();
 
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private Set<Message> messages;
+
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<Message> messages) {
+        this.messages = messages;
+    }
+
     @Override
     public String toString() {
         return "User{" +

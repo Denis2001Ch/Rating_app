@@ -8,6 +8,8 @@
 
 <body>
 
+    <div th:replace="parts/common :: login"></div>
+
     <form th:method="POST" th:action="@{/registration}">
         <label for="username">User name: </label>
         <input type="text" name="username" id="username"/>

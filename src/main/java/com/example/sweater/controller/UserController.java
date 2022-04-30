@@ -80,7 +80,24 @@ public class UserController {
         userService.unsubscribe(myuser, user);
         return "redirect:/user";
     }
+    @GetMapping("/showMessage")
+    public String showMessage(@AuthenticationPrincipal User user, Model model) {
+        model.addAttribute("messages", userService.showMessages(user));
+        return "messages";
+    }
 
+    @GetMapping("profile")
+    public String getProfile() {
+        return "profile";
+    }
 
-
+    @PostMapping("profile")
+    public String updateProfile(
+            @AuthenticationPrincipal User user,
+            @RequestParam String password,
+            @RequestParam String email
+    ) {
+        userService.updateProfile(user, password, email);
+        return "redirect:/login";
+    }
 }

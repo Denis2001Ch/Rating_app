@@ -7,6 +7,8 @@
 </head>
 <a th:href = "@{/user}"> User </a>
 <body>
+    <div th:replace="parts/common :: login"></div>
+
     <form  th:action="@{/user/edit}" method="post" th:object="${user}" >
 
         <label> Roles:</label>
