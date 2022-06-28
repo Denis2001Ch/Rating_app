@@ -6,11 +6,10 @@
     <title>Main</title>
 </head>
 
-
 <body>
-    <a th:href="@{/user/profile}">Edit profile</a>
-    <a th:href="@{/user}">user list</a>
-    <div th:replace="parts/common :: login"></div>
+        <a th:href="@{/user/profile}">Edit profile</a>
+        <a th:href="@{/user}">user list</a>
+        <a th:replace="parts/common :: login"> login page </a>
     <br>
     <div>
         <form th:action="@{/logout}" method="post">
@@ -18,12 +17,28 @@
         </form>
     </div>
     <br>
+        <!--th:field="*{text}"-->
     <div>
-        <form th:action="@{/main}" method="post" enctype="multipart/form-data" >
-            <input type="file" name="file">
-            <input type="text" name="text" placeholder="Введите сообщение" />
-            <input type="text" name="tag" placeholder="Тэг">
-            <button type="submit">Добавить</button>
+        <form th:action="@{/main}" method="post" enctype="multipart/form-data" th:object="${newMessage}">
+            <table>
+                <tr>
+                    <td>File:</td>
+                    <td><input type="file" name="file"/></td>
+                </tr>
+                <tr>
+                    <td>Text:</td>
+                    <td> <input type="text" th:value ="_" id = "text" name = "text" /></td>
+                    <td th:if="${#fields.hasErrors('text')}" th:errors="*{text}">Text Error</td>
+                </tr>
+                <tr>
+                    <td>Tag:</td>
+                    <td><input type="text" th:field="*{tag}" /></td>
+                    <td th:if="${#fields.hasErrors('tag')}" th:errors="*{tag}">Tag Error</td>
+                </tr>
+                <tr>
+                    <td><button type="submit">Submit</button></td>
+                </tr>
+            </table>
         </form>
     </div>
     <br>
@@ -38,7 +53,7 @@
         <button type="submit">Удалить</button>
     </form>
     <br>
-    <table id="countryList">
+   <table id="messagesList">
         <thead>
         <tr>
             <th> Id   </th>
@@ -49,13 +64,62 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="message : ${messages}">
+        <h th:if="${flag == 'true'}">
+
+            <tr th:each="message : ${messages}">
             <td th:text="${message.id}"></td>
             <td th:text="${message.text}"></td>
             <td th:text="${message.tag}"></td>
             <td th:text="${message.getAuthorName()}"></td>
             <td> <img th:src = "@{'/static/' + ${message.filename}}" th:width="30px"> </td>
+            <h th:if="${message.getUser().getId() == userId}">
+                <td>
+                    <form th:action="@{/editMessage/{id}(id = ${message.id})}" method="post">
+                        <input type="submit" value="Edit"/>
+                    </form>
+                </td>
+            </h>
         </tr>
+         </h>
+
+        <h th:if="${flag == 'false'}">
+            <tr th:each="message : ${messages}">
+
+                <h th:if="${message.getUser().getId() == userId && messageId == message.id}">
+                    <td th:text="${message.id}"></td>
+                    <td>
+                        <form th:action="@{/editedMessage/{id}(id = ${message.id})}" method="post">
+                            <input type="text" th:value="${message.getText()}" name = "text"/>
+                            <input type="submit" value="Confirm"/>
+                        </form>
+                    </td>
+                    <td th:text="${message.tag}"></td>
+                    <td th:text="${message.getAuthorName()}"></td>
+                    <td> <img th:src = "@{'/static/' + ${message.filename}}" th:width="30px"> </td>
+                </h>
+
+                <h th:if="${message.getUser().getId() == userId && !(messageId == message.id)}">
+                    <td th:text="${message.id}"></td>
+                    <td th:text="${message.text}"></td>
+                    <td th:text="${message.tag}"></td>
+                    <td th:text="${message.getAuthorName()}"></td>
+                    <td> <img th:src = "@{'/static/' + ${message.filename}}" th:width="30px"> </td>
+                    <td>
+                        <form th:action="@{/editedMessage}" method="post">
+                            <input type="submit" value="Edit"/>
+                        </form>
+                    </td>
+                </h>
+                <h th:if="${!(message.getUser().getId() == userId)}">
+                    <td th:text="${message.id}"></td>
+                    <td th:text="${message.text}"></td>
+                    <td th:text="${message.tag}"></td>
+                    <td th:text="${message.getAuthorName()}"></td>
+                    <td> <img th:src = "@{'/static/' + ${message.filename}}" th:width="30px"> </td>
+                </h>
+
+            </tr>
+        </h>
         </tbody>
     </table>
 

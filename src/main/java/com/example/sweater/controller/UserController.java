@@ -1,5 +1,6 @@
 package com.example.sweater.controller;
 
+import com.example.sweater.domain.Message;
 import com.example.sweater.domain.Role;
 import com.example.sweater.domain.User;
 import com.example.sweater.repos.UserRepo;
@@ -28,7 +29,6 @@ public class UserController {
 
     @GetMapping
     public String userList(Model model,  @AuthenticationPrincipal User user) {
-
         model.addAttribute("mainUser", user);
         model.addAttribute("subscribersIds", userService.getSubscribersId(user));
         model.addAttribute("users", userRepo.findAll());
@@ -46,7 +46,9 @@ public class UserController {
 
     @PostMapping("edit")
     public String userSave(
+            @RequestHeader("Host") String host,
             @RequestParam("userId") User user,
+            @RequestBody String requestbody,
             @RequestParam("roles") String[] rolesForm) {
 
         Set<String> roles = Arrays.stream(Role.values())
@@ -60,8 +62,8 @@ public class UserController {
                 user.getRoles().add(Role.valueOf(key));
             }
         }
-        user.getRoles().stream().forEach(x -> x.name() ); //?
-
+        user.getRoles().stream().forEach(x -> x.name()); //?
+        System.out.println(host + " " + requestbody);
         userRepo.save(user);
         return "redirect:/user";
     }
@@ -82,7 +84,8 @@ public class UserController {
     }
     @GetMapping("/showMessage")
     public String showMessage(@AuthenticationPrincipal User user, Model model) {
-        model.addAttribute("messages", userService.showMessages(user));
+        List<Message> messages = userService.showMessages(user);
+        model.addAttribute("messages", messages);
         return "messages";
     }
 

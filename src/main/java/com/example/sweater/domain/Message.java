@@ -1,5 +1,7 @@
 package com.example.sweater.domain;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +17,13 @@ public class Message implements Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Integer id;
+
+    @NotBlank(message = "Please, fill text")
+    @JsonView(Views.Base.class)
     private String text;
+
+    @NotBlank(message = "Please, fill tag")
+    @JsonView(Views.Base.class)
     private String tag;
 
     @ManyToOne(fetch = FetchType.EAGER)
