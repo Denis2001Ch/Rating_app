@@ -1,0 +1,35 @@
+    version: '2'
+
+    services:
+
+      app:
+        image: 'docker-spring-boot-postgres:latest'
+        build:
+          context: /.
+        ports:
+          - "8081:8081"
+        container_name: app
+        depends_on:
+          - postgresql
+        environment:
+          - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/postgres
+          - SPRING_DATASOURCE_USERNAME=postgres
+          - SPRING_DATASOURCE_PASSWORD=postgres
+          - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+          - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+          - JAVAX_PERSISTENCE_JDBC_URL=jdbc:postgresql://localhost:5432/postgres
+          - JAVAX_PERSISTENCE_JDBC_USER=postgres
+          - JAVAX_PERSISTENCE_JDBC_PASSWORD=postgres
+          - HIBERNATE_HBM2DDL_AUTO=update
+          - HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQL9Dialect
+          - SPRING_JPA_DATABASE=postgresql
+      postgresql:
+        image: 'postgres:13.1-alpine'
+        container_name: postgresql
+        ports:
+          - "5432:5432"
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+          - SPRING_JPA_DATABASE=postgresql
+          - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
